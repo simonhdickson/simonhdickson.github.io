@@ -56,7 +56,7 @@ atom_feed:
 post_layout: single
 page_layout: archive
 
-permalink: /:year/:month/:day/:title
+permalink: /blog/:year/:month/:day/:title
 
 # Build settings
 markdown: kramdown
@@ -70,30 +70,30 @@ exclude:
 # Site Author
 author:
   name             : "Simon Dickson"
-  avatar           : "bio-photo.jpg"
-  bio              : "I am an amazing person."
+  avatar           : "assets/media/bio-photo.jpg"
+  bio              : "Views are not my own and may not reflect the of anyone"
   location         : "London, UK"
   email            :
   uri              :
   bitbucket        : "simonhdickson"
   codepen          :
   dribbble         :
-  flickr           : "83690047@N04"
-  facebook         : "simonhdickson"
+#  flickr           : "83690047@N04"
+#  facebook         : "simonhdickson"
   foursquare       :
   github           : "simonhdickson"
-  google_plus      : "simonhdickson"
+#  google_plus      : "simonhdickson"
   keybase          :
-  instagram        : "simonhdickson"
+#  instagram        : "simonhdickson"
   lastfm           :
-  linkedin         : "simonhdickson"
-  pinterest        : "simonhdickson"
+#  linkedin         : "simonhdickson"
+#  pinterest        : "simonhdickson"
   soundcloud       :
   stackoverflow    : "503341/simon-dickson"
   steam            : "simonhdickson"
   tumblr           :
   twitter          : "simonhdickson"
-  vine             : "941086874527764480"
+#  vine             : "941086874527764480"
   weibo            :
   xing             :
   youtube          : "simonhdickson"
