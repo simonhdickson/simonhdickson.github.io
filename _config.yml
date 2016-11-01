@@ -13,6 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
+
 title: Simon Dickson
 email: simon.dickson@codestill.com
 description: > # this means to ignore newlines until "baseurl:"
@@ -21,19 +22,22 @@ description: > # this means to ignore newlines until "baseurl:"
   Google search results) and in your feed.xml site description.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://www.simonhdickson.com" # the base hostname & protocol for your site, e.g. http://example.com
+
 # breadcrumbs            : false # true, false (default)
 words_per_minute         : 200
+
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      comments: true
+
 comments:
-  provider               : # false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "custom"
+  provider               : "disqus"
   disqus:
     shortname            : "simonhdickson"
-  discourse:
-    server               : # https://meta.discourse.org/t/embedding-discourse-comments-via-javascript/31963 , e.g.: meta.discourse.org
-  facebook:
-    # https://developers.facebook.com/docs/plugins/comments
-    appid                :
-    num_posts            : # 5 (default)
-    colorscheme          : # "light" (default), "dark"
 staticman:
   allowedFields          : ['name', 'email', 'url', 'message']
   branch                 : # "master", "gh-pages"
@@ -56,6 +60,10 @@ atom_feed:
 post_layout: single
 page_layout: archive
 
+# Pagination
+paginate: 5
+paginate_path: "blog/page/:num/"
+
 permalink: /blog/:year/:month/:day/:title
 
 # Build settings
@@ -63,6 +71,7 @@ markdown: kramdown
 theme: minimal-mistakes-jekyll
 gems:
   - jekyll-feed
+  - jekyll-paginate
 exclude:
   - Gemfile
   - Gemfile.lock

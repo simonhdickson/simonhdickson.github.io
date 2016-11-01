@@ -93,6 +93,7 @@ DEPENDENCIES
   execjs
   jekyll
   jekyll-feed
+  jekyll-paginate
   minimal-mistakes-jekyll
   therubyracer
 

@@ -12,6 +12,7 @@ ruby RUBY_VERSION
 gem "jekyll"
 gem "execjs"
 gem "therubyracer"
+gem 'wdm', '>= 0.1.0' if Gem.win_platform?
 
 # This is the default theme for new Jekyll sites. You may change this to anything you like.
 gem "minimal-mistakes-jekyll"
@@ -23,4 +24,5 @@ gem "minimal-mistakes-jekyll"
 # If you have any plugins, put them here!
 group :jekyll_plugins do
    gem "jekyll-feed"
+   gem "jekyll-paginate"
 end
