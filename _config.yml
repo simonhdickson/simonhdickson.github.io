@@ -1,0 +1,103 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing these this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+title: Simon Dickson
+email: simon.dickson@codestill.com
+description: > # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://www.simonhdickson.com" # the base hostname & protocol for your site, e.g. http://example.com
+# breadcrumbs            : false # true, false (default)
+words_per_minute         : 200
+comments:
+  provider               : # false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "custom"
+  disqus:
+    shortname            : "simonhdickson"
+  discourse:
+    server               : # https://meta.discourse.org/t/embedding-discourse-comments-via-javascript/31963 , e.g.: meta.discourse.org
+  facebook:
+    # https://developers.facebook.com/docs/plugins/comments
+    appid                :
+    num_posts            : # 5 (default)
+    colorscheme          : # "light" (default), "dark"
+staticman:
+  allowedFields          : ['name', 'email', 'url', 'message']
+  branch                 : # "master", "gh-pages"
+  commitMessage          : "New comment."
+  filename               : comment-{@timestamp}
+  format                 : "yml"
+  moderation             : true
+  path                   : "_data/comments/{options.slug}"
+  requiredFields         : ['name', 'email', 'message']
+  transforms:
+    email                : "md5"
+  generatedFields:
+    date:
+      type               : "date"
+      options:
+        format           : "iso8601" # "iso8601" (default), "timestamp-seconds", "timestamp-milliseconds"
+atom_feed:
+  path                   : # blank (default) uses feed.xml
+
+post_layout: single
+page_layout: default
+
+permalink: /:year/:month/:day/:title
+
+# Build settings
+markdown: kramdown
+theme: minimal-mistakes-jekyll
+gems:
+  - jekyll-feed
+exclude:
+  - Gemfile
+  - Gemfile.lock
+
+# Site Author
+author:
+  name             : "Simon Dickson"
+  avatar           : "bio-photo.jpg"
+  bio              : "I am an amazing person."
+  location         : "London, UK"
+  email            :
+  uri              :
+  bitbucket        : "simonhdickson"
+  codepen          :
+  dribbble         :
+  flickr           : "83690047@N04"
+  facebook         : "simonhdickson"
+  foursquare       :
+  github           : "simonhdickson"
+  google_plus      : "simonhdickson"
+  keybase          :
+  instagram        : "simonhdickson"
+  lastfm           :
+  linkedin         : "simonhdickson"
+  pinterest        : "simonhdickson"
+  soundcloud       :
+  stackoverflow    : "503341/simon-dickson"
+  steam            : "simonhdickson"
+  tumblr           :
+  twitter          : "simonhdickson"
+  vine             : "941086874527764480"
+  weibo            :
+  xing             :
+  youtube          : "simonhdickson"
+
+# Custom Collections
+collections:
+- games
