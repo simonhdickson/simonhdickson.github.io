@@ -54,7 +54,7 @@ atom_feed:
   path                   : # blank (default) uses feed.xml
 
 post_layout: single
-page_layout: default
+page_layout: archive
 
 permalink: /:year/:month/:day/:title
 
@@ -100,4 +100,7 @@ author:
 
 # Custom Collections
 collections:
-- games
+  games:
+    output: true
+  youtube:
+    output: true

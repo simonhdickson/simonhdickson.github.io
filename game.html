@@ -4,5 +4,6 @@ title: "Simon's List of Games"
 ---
 
 {% for game in site.games %}
-  <p>hello world</p>
+  <h2>{{ game.title }}</h2>
+  <a href="{{ game.url }}">Playlist</a>
 {% endfor %}

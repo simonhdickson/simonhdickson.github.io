@@ -1,0 +1,9 @@
+---
+layout: archive
+title: ""
+---
+
+{% for video in site.youtube %}
+  <h2>{{ video.title }}</h2>
+  <a href="{{ video.playlist }}">Playlist</a>
+{% endfor %}

@@ -3,4 +3,7 @@ main:
     url: /blog/
 
   - title: "Games"
-    url: /games/
+    url: /game/
+
+  - title: "Videos"
+    url: /videos/
