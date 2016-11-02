@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Nancy + F# = Fancy  Simon Dickson</title>
+
+
+
+
+<meta name="description" content="Last week I made the owin monad, and when I showed it to @@nbevans he suggested making it work with nancy.So I did.Let me introduce Fancy:let pipeline =    fancy {        get &quot;/&quot; (fun () -&gt; sprintf &quot;Hello World!&quot;)        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;Hello %s!&quot; name)         get &quot;/square/%i&quot; (fun number -&gt; sprintf &quot;%i&quot; &lt;| number * number)     }I won’t dig too heavily into the code at this moment, it is quite ugly and hacky in places. It is also obviously not production ready. However, the nice thing about this is that it is fully typed, i.e:let pipeline =    fancy {        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;%s&quot; name)       // Works        get &quot;/%s&quot; (fun (name:int) -&gt; sprintf &quot;%s&quot; name) // Compiler error!        get &quot;/%i&quot; (fun name -&gt; sprintf &quot;%s&quot; name)       // Compiler error!        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;%i&quot; name)       // Compiler error!    }Now if you know your nancy, you’ll know that nancy doesn’t expect the format “/%s” or “/%i”; it expects the format “/{name}” or “/{number:int}”. And you probably also know that all normally StringFormat functions in F# take type parameters, rather than a function of those types.Well what happens is we’re only using StringFormat for static type checking, we’re not actually using StringFormat here quite as it was intended.member this.Get(m, url:StringFormat&lt;&#39;a-&gt;&#39;b,&#39;c&gt;, processor:&#39;a-&gt;&#39;b) =    // ommittedThese type constraints do that. There is actually a slight error, with the above code, but I’m reasonably certain it can be converted into a feature. You see you are required to have the correct parameters in the correct order, but extra paramters are allowed.let pipeline =    fancy {        get &quot;/%s&quot; (fun name (other:int) -&gt; sprintf &quot;%s&quot; name)       // Compiles    }Currently this will cause the code to fail, however it is quite possible we can use that to implement a convention based system for passing extra things like headers, parameters, etc.Anyway here is a link to the repo, feel free to grab the code and have a play!">
+
+
+
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="Simon Dickson">
+<meta property="og:title" content="Nancy + F# = Fancy">
+
+
+  <link rel="canonical" href="http://localhost:4000/blog/2013/12/14/nancy-plus-fsharp">
+  <meta property="og:url" content="http://localhost:4000/blog/2013/12/14/nancy-plus-fsharp">
+
+
+
+  <meta property="og:description" content="Last week I made the owin monad, and when I showed it to @@nbevans he suggested making it work with nancy.So I did.Let me introduce Fancy:let pipeline =    fancy {        get &quot;/&quot; (fun () -&gt; sprintf &quot;Hello World!&quot;)        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;Hello %s!&quot; name)         get &quot;/square/%i&quot; (fun number -&gt; sprintf &quot;%i&quot; &lt;| number * number)     }I won’t dig too heavily into the code at this moment, it is quite ugly and hacky in places. It is also obviously not production ready. However, the nice thing about this is that it is fully typed, i.e:let pipeline =    fancy {        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;%s&quot; name)       // Works        get &quot;/%s&quot; (fun (name:int) -&gt; sprintf &quot;%s&quot; name) // Compiler error!        get &quot;/%i&quot; (fun name -&gt; sprintf &quot;%s&quot; name)       // Compiler error!        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;%i&quot; name)       // Compiler error!    }Now if you know your nancy, you’ll know that nancy doesn’t expect the format “/%s” or “/%i”; it expects the format “/{name}” or “/{number:int}”. And you probably also know that all normally StringFormat functions in F# take type parameters, rather than a function of those types.Well what happens is we’re only using StringFormat for static type checking, we’re not actually using StringFormat here quite as it was intended.member this.Get(m, url:StringFormat&lt;&#39;a-&gt;&#39;b,&#39;c&gt;, processor:&#39;a-&gt;&#39;b) =    // ommittedThese type constraints do that. There is actually a slight error, with the above code, but I’m reasonably certain it can be converted into a feature. You see you are required to have the correct parameters in the correct order, but extra paramters are allowed.let pipeline =    fancy {        get &quot;/%s&quot; (fun name (other:int) -&gt; sprintf &quot;%s&quot; name)       // Compiles    }Currently this will cause the code to fail, however it is quite possible we can use that to implement a convention based system for passing extra things like headers, parameters, etc.Anyway here is a link to the repo, feel free to grab the code and have a play!">
+
+
+
+
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2013-12-14T10:00:00+00:00">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="http://localhost:4000/feed.xml" type="application/atom+xml" rel="alternate" title="Simon Dickson Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://localhost:4000/assets/css/main.css">
+
+<meta http-equiv="cleartype" content="on">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <button><div class="navicon"></div></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg"><a href="http://localhost:4000/">Simon Dickson</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/blog/">Blog</a></li>
+          
+        </ul>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+      	<img src="http://localhost:4000/assets/media/bio-photo.jpg" class="author__avatar" alt="Simon Dickson">
+      
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name">Simon Dickson</h3>
+    <p class="author__bio">Views are not my own and may not reflect the of anyone</p>
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> London, UK</li>
+      
+      
+      
+      
+      
+        <li><a href="https://twitter.com/simonhdickson"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+      
+      
+      
+      
+      
+      
+      
+      
+        <li><a href="https://bitbucket.org/simonhdickson"><i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
+      
+      
+        <li><a href="https://github.com/simonhdickson"><i class="fa fa-fw fa-github" aria-hidden="true"></i> Github</a></li>
+      
+      
+        <li><a href="https://www.stackoverflow.com/users/503341/simon-dickson"><i class="fa fa-fw fa-stack-overflow" aria-hidden="true"></i> Stackoverflow</a></li>
+      
+      
+      
+      
+      
+      
+        <li><a href="https://steamcommunity.com/id/simonhdickson"><i class="fa fa-fw fa-steam-square" aria-hidden="true"></i> Steam</a></li>
+      
+      
+        <li><a href="https://www.youtube.com/user/simonhdickson"><i class="fa fa-fw fa-youtube-square" aria-hidden="true"></i> YouTube</a></li>
+      
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Nancy + F# = Fancy">
+    <meta itemprop="description" content="Last week I made the owin monad, and when I showed it to @@nbevans he suggested making it work with nancy.So I did.Let me introduce Fancy:let pipeline =    fancy {        get &quot;/&quot; (fun () -&gt; sprintf &quot;Hello World!&quot;)        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;Hello %s!&quot; name)         get &quot;/square/%i&quot; (fun number -&gt; sprintf &quot;%i&quot; &lt;| number * number)     }I won’t dig too heavily into the code at this moment, it is quite ugly and hacky in places. It is also obviously not production ready. However, the nice thing about this is that it is fully typed, i.e:let pipeline =    fancy {        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;%s&quot; name)       // Works        get &quot;/%s&quot; (fun (name:int) -&gt; sprintf &quot;%s&quot; name) // Compiler error!        get &quot;/%i&quot; (fun name -&gt; sprintf &quot;%s&quot; name)       // Compiler error!        get &quot;/%s&quot; (fun name -&gt; sprintf &quot;%i&quot; name)       // Compiler error!    }Now if you know your nancy, you’ll know that nancy doesn’t expect the format “/%s” or “/%i”; it expects the format “/{name}” or “/{number:int}”. And you probably also know that all normally StringFormat functions in F# take type parameters, rather than a function of those types.Well what happens is we’re only using StringFormat for static type checking, we’re not actually using StringFormat here quite as it was intended.member this.Get(m, url:StringFormat&lt;&#39;a-&gt;&#39;b,&#39;c&gt;, processor:&#39;a-&gt;&#39;b) =    // ommittedThese type constraints do that. There is actually a slight error, with the above code, but I’m reasonably certain it can be converted into a feature. You see you are required to have the correct parameters in the correct order, but extra paramters are allowed.let pipeline =    fancy {        get &quot;/%s&quot; (fun name (other:int) -&gt; sprintf &quot;%s&quot; name)       // Compiles    }Currently this will cause the code to fail, however it is quite possible we can use that to implement a convention based system for passing extra things like headers, parameters, etc.Anyway here is a link to the repo, feel free to grab the code and have a play!">
+    <meta itemprop="datePublished" content="December 14, 2013">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Nancy + F# = Fancy
+</h1>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        <p>Last week I made the <a href="blog/2013/12/03/owin-the-myth">owin monad</a>, and when I showed it to <a href="https://twitter.com/nbevans">@@nbevans</a> he suggested making it work with nancy.</p>
+
+<p>So I did.</p>
+
+<p>Let me introduce Fancy:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let pipeline =
+    fancy {
+        get "/" (fun () -&gt; sprintf "Hello World!")
+        get "/%s" (fun name -&gt; sprintf "Hello %s!" name) 
+        get "/square/%i" (fun number -&gt; sprintf "%i" &lt;| number * number) 
+    }
+</code></pre>
+</div>
+
+<p>I won’t dig too heavily into the code at this moment, it is quite ugly and hacky in places. It is also obviously not production ready. However, the nice thing about this is that it is fully typed, i.e:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let pipeline =
+    fancy {
+        get "/%s" (fun name -&gt; sprintf "%s" name)       // Works
+        get "/%s" (fun (name:int) -&gt; sprintf "%s" name) // Compiler error!
+        get "/%i" (fun name -&gt; sprintf "%s" name)       // Compiler error!
+        get "/%s" (fun name -&gt; sprintf "%i" name)       // Compiler error!
+    }
+</code></pre>
+</div>
+
+<p>Now if you know your nancy, you’ll know that nancy doesn’t expect the format “/%s” or “/%i”; it expects the format “/{name}” or “/{number:int}”. And you probably also know that all normally StringFormat functions in F# take type parameters, rather than a function of those types.</p>
+
+<p>Well what happens is we’re only using StringFormat for static type checking, we’re not actually using StringFormat here quite as it was intended.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>member this.Get(m, url:StringFormat&lt;'a-&gt;'b,'c&gt;, processor:'a-&gt;'b) =
+    // ommitted
+</code></pre>
+</div>
+
+<p>These type constraints do that. There is actually a slight error, with the above code, but I’m reasonably certain it can be converted into a feature. You see you are required to have the correct parameters in the correct order, but extra paramters are allowed.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let pipeline =
+    fancy {
+        get "/%s" (fun name (other:int) -&gt; sprintf "%s" name)       // Compiles
+    }
+</code></pre>
+</div>
+
+<p>Currently this will cause the code to fail, however it is quite possible we can use that to implement a convention based system for passing extra things like headers, parameters, etc.</p>
+
+<p>Anyway here is a <a href="https://github.com/simonhdickson/Fancy">link to the repo</a>, feel free to grab the code and have a play!</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2013-12-14T10:00:00+00:00">December 14, 2013</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="http://localhost:4000/blog/2013/12/03/owin-the-myth" class="pagination--pager" title="Owin: The Myth, the Monad
+">Previous</a>
+    
+    
+      <a href="http://localhost:4000/blog/2014/02/27/fsharp-31-as-csharp-60-strict-mode" class="pagination--pager" title="F# 3.1 as C# 6.0 Strict Mode
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+      <div class="page__comments">
+  
+  
+    <h4 class="page__comments-title">Comments</h4>
+    <section id="disqus_thread"></section>
+  
+</div>
+    
+  </article>
+
+  
+  
+</div>
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+    
+    
+    
+      <li><a href="http://github.com/simonhdickson"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+      <li><a href="http://bitbucket.org/simonhdickson"><i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
+    
+    <li><a href="http://localhost:4000/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2016 Simon Dickson. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+      </footer>
+    </div>
+
+    <script src="http://localhost:4000/assets/js/main.min.js"></script>
+
+
+
+
+
+  
+  <script type="text/javascript">
+  	/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+  	var disqus_shortname = 'simonhdickson';
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function() {
+  		var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  		dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  	})();
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function () {
+  		var s = document.createElement('script'); s.async = true;
+  		s.type = 'text/javascript';
+  		s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  		(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  	}());
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+
+
+  </body>
+</html>

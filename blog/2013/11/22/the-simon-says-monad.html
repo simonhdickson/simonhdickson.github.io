@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>The Simon Says Monad  Simon Dickson</title>
+
+
+
+
+<meta name="description" content="What is a Monad?Everyone tries to explain monads in a simple way and makes it sound way more complicated than it really is. Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function. That not strictly mathmatically true, but anything that fits that description could at least be described as monadic.You might be reading that and thinking “surely everything is monadic?”, well yes, almost everything is kind of monadic (or can be described in that way).The Simon Says MonadMay I present the single most useful monad in the world!let doIt this that =    simonSays{        let! i = this        let! j = that        printfn &quot;%i&quot; &lt;| i + j    }So, the way I see it, when you declare simonSays { … }; you’re basically saying “we don’t play by normal rules: now we play by simonSays rules.” What this means is, if you don’t say “Simon Says”, then you don’t do anything. So for example, if we invoke it like this:doIt (SimonSays 1) (SimonSays 1)Then the result is SimonSays 2. However if we do:doIt (SimonSays 1) SimonDidntSayThe the result is SimonDidntSay. To go back to the definition of monads earlier, “Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function”. In the Simon Says monad, there is a single very simple rule: you must say “Simon Says”, otherwise we don’t do anything. If we re-write this code slightly to remove all the F# sugar, it become far more obvious what is happening here.let doIt this that =    match this with    | SimonSays i -&gt;        match that with        | SimonSays j -&gt; printfn &quot;%i&quot; &lt;| i + j        | _ -&gt; ()    | _ -&gt; ()If you build up a large chain of these things, then writing all this would get cumbersome.Maybe monadIf you know your monads, you may have already noticed that the “Simon Says” monad bears a slightly resemblance to the “Maybe” monad. Ok, it IS actually maybe monad. Infact you can find more information about the maybe monad here.">
+
+
+
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="Simon Dickson">
+<meta property="og:title" content="The Simon Says Monad">
+
+
+  <link rel="canonical" href="http://localhost:4000/blog/2013/11/22/the-simon-says-monad">
+  <meta property="og:url" content="http://localhost:4000/blog/2013/11/22/the-simon-says-monad">
+
+
+
+  <meta property="og:description" content="What is a Monad?Everyone tries to explain monads in a simple way and makes it sound way more complicated than it really is. Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function. That not strictly mathmatically true, but anything that fits that description could at least be described as monadic.You might be reading that and thinking “surely everything is monadic?”, well yes, almost everything is kind of monadic (or can be described in that way).The Simon Says MonadMay I present the single most useful monad in the world!let doIt this that =    simonSays{        let! i = this        let! j = that        printfn &quot;%i&quot; &lt;| i + j    }So, the way I see it, when you declare simonSays { … }; you’re basically saying “we don’t play by normal rules: now we play by simonSays rules.” What this means is, if you don’t say “Simon Says”, then you don’t do anything. So for example, if we invoke it like this:doIt (SimonSays 1) (SimonSays 1)Then the result is SimonSays 2. However if we do:doIt (SimonSays 1) SimonDidntSayThe the result is SimonDidntSay. To go back to the definition of monads earlier, “Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function”. In the Simon Says monad, there is a single very simple rule: you must say “Simon Says”, otherwise we don’t do anything. If we re-write this code slightly to remove all the F# sugar, it become far more obvious what is happening here.let doIt this that =    match this with    | SimonSays i -&gt;        match that with        | SimonSays j -&gt; printfn &quot;%i&quot; &lt;| i + j        | _ -&gt; ()    | _ -&gt; ()If you build up a large chain of these things, then writing all this would get cumbersome.Maybe monadIf you know your monads, you may have already noticed that the “Simon Says” monad bears a slightly resemblance to the “Maybe” monad. Ok, it IS actually maybe monad. Infact you can find more information about the maybe monad here.">
+
+
+
+
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2013-11-22T15:56:00+00:00">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="http://localhost:4000/feed.xml" type="application/atom+xml" rel="alternate" title="Simon Dickson Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://localhost:4000/assets/css/main.css">
+
+<meta http-equiv="cleartype" content="on">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <button><div class="navicon"></div></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg"><a href="http://localhost:4000/">Simon Dickson</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/blog/">Blog</a></li>
+          
+        </ul>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+      	<img src="http://localhost:4000/assets/media/bio-photo.jpg" class="author__avatar" alt="Simon Dickson">
+      
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name">Simon Dickson</h3>
+    <p class="author__bio">Views are not my own and may not reflect the of anyone</p>
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> London, UK</li>
+      
+      
+      
+      
+      
+        <li><a href="https://twitter.com/simonhdickson"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+      
+      
+      
+      
+      
+      
+      
+      
+        <li><a href="https://bitbucket.org/simonhdickson"><i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
+      
+      
+        <li><a href="https://github.com/simonhdickson"><i class="fa fa-fw fa-github" aria-hidden="true"></i> Github</a></li>
+      
+      
+        <li><a href="https://www.stackoverflow.com/users/503341/simon-dickson"><i class="fa fa-fw fa-stack-overflow" aria-hidden="true"></i> Stackoverflow</a></li>
+      
+      
+      
+      
+      
+      
+        <li><a href="https://steamcommunity.com/id/simonhdickson"><i class="fa fa-fw fa-steam-square" aria-hidden="true"></i> Steam</a></li>
+      
+      
+        <li><a href="https://www.youtube.com/user/simonhdickson"><i class="fa fa-fw fa-youtube-square" aria-hidden="true"></i> YouTube</a></li>
+      
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="The Simon Says Monad">
+    <meta itemprop="description" content="What is a Monad?Everyone tries to explain monads in a simple way and makes it sound way more complicated than it really is. Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function. That not strictly mathmatically true, but anything that fits that description could at least be described as monadic.You might be reading that and thinking “surely everything is monadic?”, well yes, almost everything is kind of monadic (or can be described in that way).The Simon Says MonadMay I present the single most useful monad in the world!let doIt this that =    simonSays{        let! i = this        let! j = that        printfn &quot;%i&quot; &lt;| i + j    }So, the way I see it, when you declare simonSays { … }; you’re basically saying “we don’t play by normal rules: now we play by simonSays rules.” What this means is, if you don’t say “Simon Says”, then you don’t do anything. So for example, if we invoke it like this:doIt (SimonSays 1) (SimonSays 1)Then the result is SimonSays 2. However if we do:doIt (SimonSays 1) SimonDidntSayThe the result is SimonDidntSay. To go back to the definition of monads earlier, “Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function”. In the Simon Says monad, there is a single very simple rule: you must say “Simon Says”, otherwise we don’t do anything. If we re-write this code slightly to remove all the F# sugar, it become far more obvious what is happening here.let doIt this that =    match this with    | SimonSays i -&gt;        match that with        | SimonSays j -&gt; printfn &quot;%i&quot; &lt;| i + j        | _ -&gt; ()    | _ -&gt; ()If you build up a large chain of these things, then writing all this would get cumbersome.Maybe monadIf you know your monads, you may have already noticed that the “Simon Says” monad bears a slightly resemblance to the “Maybe” monad. Ok, it IS actually maybe monad. Infact you can find more information about the maybe monad here.">
+    <meta itemprop="datePublished" content="November 22, 2013">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">The Simon Says Monad
+</h1>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        <h3 id="what-is-a-monad">What is a Monad?</h3>
+<p>Everyone tries to explain monads in a simple way and makes it sound way more complicated than it really is. Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function. That not strictly mathmatically true, but anything that fits that description could at least be described as monadic.</p>
+
+<p>You might be reading that and thinking “surely everything is monadic?”, well yes, almost everything is kind of monadic (or can be described in that way).</p>
+
+<h3 id="the-simon-says-monad">The Simon Says Monad</h3>
+<p>May I present the single most useful monad in the world!</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let doIt this that =
+    simonSays{
+        let! i = this
+        let! j = that
+        printfn "%i" &lt;| i + j
+    }
+</code></pre>
+</div>
+
+<p>So, the way I see it, when you declare simonSays { … }; you’re basically saying “we don’t play by normal rules: now we play by simonSays rules.” What this means is, if you don’t say “Simon Says”, then you don’t do anything. So for example, if we invoke it like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>doIt (SimonSays 1) (SimonSays 1)
+</code></pre>
+</div>
+
+<p>Then the result is SimonSays 2. However if we do:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>doIt (SimonSays 1) SimonDidntSay
+</code></pre>
+</div>
+
+<p>The the result is SimonDidntSay. To go back to the definition of monads earlier, “Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function”. In the Simon Says monad, there is a single very simple rule: you must say “Simon Says”, otherwise we don’t do anything. If we re-write this code slightly to remove all the F# sugar, it become far more obvious what is happening here.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let doIt this that =
+    match this with
+    | SimonSays i -&gt;
+        match that with
+        | SimonSays j -&gt; printfn "%i" &lt;| i + j
+        | _ -&gt; ()
+    | _ -&gt; ()
+</code></pre>
+</div>
+
+<p>If you build up a large chain of these things, then writing all this would get cumbersome.</p>
+
+<h3 id="maybe-monad">Maybe monad</h3>
+<p>If you know your monads, you may have already noticed that the “Simon Says” monad bears a slightly resemblance to the “Maybe” monad. Ok, it IS actually maybe monad. Infact you can find more information about the maybe monad <a href="http://en.wikibooks.org/wiki/F_Sharp_Programming/Computation_Expressions">here</a>.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2013-11-22T15:56:00+00:00">November 22, 2013</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="http://localhost:4000/blog/2013/11/16/fscheck" class="pagination--pager" title="FsCheck
+">Previous</a>
+    
+    
+      <a href="http://localhost:4000/blog/2013/11/24/tabs-vs-spaces" class="pagination--pager" title="Tabs vs Spaces
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+      <div class="page__comments">
+  
+  
+    <h4 class="page__comments-title">Comments</h4>
+    <section id="disqus_thread"></section>
+  
+</div>
+    
+  </article>
+
+  
+  
+</div>
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+    
+    
+    
+      <li><a href="http://github.com/simonhdickson"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+      <li><a href="http://bitbucket.org/simonhdickson"><i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
+    
+    <li><a href="http://localhost:4000/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2016 Simon Dickson. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+      </footer>
+    </div>
+
+    <script src="http://localhost:4000/assets/js/main.min.js"></script>
+
+
+
+
+
+  
+  <script type="text/javascript">
+  	/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+  	var disqus_shortname = 'simonhdickson';
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function() {
+  		var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  		dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  	})();
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function () {
+  		var s = document.createElement('script'); s.async = true;
+  		s.type = 'text/javascript';
+  		s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  		(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  	}());
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>FsCheck  Simon Dickson</title>
+
+
+
+
+<meta name="description" content="Property based testingSo you might be first wondering what property based testing means. Simply put you describe properties of your functions, and then you bombard your code with data trying to prove or disprove these properties.Here’s an example, let’s say we have a function like this:let removeNegatives list =        let rec removeNegatives&#39; list newList =            match list with            | [] -&gt; newList            | head :: tail when head &lt; 0 -&gt; removeNegatives&#39; tail newList             | head :: tail -&gt; removeNegatives&#39; tail (head :: newList)        removeNegatives&#39; list []And we want to say this function has the following three properties:  If you pass in a list, it returns the list without any negative numbers in it.  If you pass in a list without any negative numbers in it, you get exactly the same list back (this is implied from the first property, but let’s make it explict anyway).  The function will not re-order the elements.So, how do we go about testing these properties?FsCheck to the rescueFsCheck is an F# port of the Haskell framework QuickCheck. What it’ll let us do is fire a whole bunch of data at our function with the aim of helping us ensure that these properties hold.Now before we get onto FsCheck itself, let’s look at how we might test this traditionally. Normally using something like xUnit, you’d have to write specific examples such as this:[&lt;Fact&gt;]let ``for a non-negative list, returns the same list`` () =    let list = [1;2;3]    let result = list = removeNegatives list    Assert.True resultThis does work, but it means you have to manually come up with a few examples of this, a few examples of the other ones. In this particular case the function is simple enough that this would find any bugs but in more complex functions there might be certain numbers that would break it.So using FsCheck we would instead might define this test like this:[&lt;Property&gt;]let ``for a non-negative list, returns the same list`` (list:NonNegativeInt list) =    let list = List.map (fun (i:NonNegativeInt) -&gt; i.Get) list    list = removeNegatives listThe Property attribute works just like the Fact in xUnit or the Test in Nunit. There is one major difference however: the function no longer takes unit, it can take any parameter that FsCheck knows how to create (and yes, you can define them yourself). NonNegativeInt is a built in alias for int which is as the name suggests is a int which is not negative.You may also have noticed that there are no asserts in this test either. That is because as long as your function returns something FsCheck understands (i.e. bool, exceptions, etc), FsCheck will work out whether the test failed or not that way. So in this case, so long as the final line resolves to true, then the test will be considered to have passed.There is actually one final thing to note here aswell, this test isn’t excuted once. By default FsCheck will try to find 100 parameters that work and run the test that many times. You can change this number by setting the MaxSize like this:[&lt;Property(MaxSize=1000)&gt;]let ``my test`` () =    ...Anyway, back the tests. If you try and run this test, you’ll see that it fails. Oh noes! What could possibly be wrong?!?! Oh yes, have you noticed that the list is actually reversed during the process, which breaks one of our properties. So lets fix that.let removeNegatives list =        let rec removeNegatives&#39; list newList =            match list with            | [] -&gt; List.rev newList            | head :: tail when head &lt; 0 -&gt; removeNegatives&#39; tail newList             | head :: tail -&gt; removeNegatives&#39; tail (head :: newList)        removeNegatives&#39; list []Ok, so now we have a test covering that second property: if you pass in a non-negative list, you get the same list back again.So now how about the first property, testing for the removal of elements less than zero. Well first we could write a test that checks that if you pass in a list of negative numbers, it should always return an empty list:[&lt;Property&gt;]let ``for a negative list, returns an empty list`` (list:PositiveInt list) =    let list = List.map (fun (i:PositiveInt) -&gt; -1 * i.Get) list    [] = removeNegatives listOk great and that passes, maybe we should write a test that tests if it actually filters things out. Well that looks something like this:[&lt;Property&gt;]    let ``for a mixed list, returns a positive list`` (list:int list) =        let outputList = List.filter (fun i -&gt; i &gt;= 0) list        outputList = removeNegatives listIn this case, this test rather points out the uselessness of this function. Maybe that makes it quite a bad example, but I put it here for completeness anyway (after all it does implement the same function in a single line).Side noteI probably should point out that I have had some problem with using FsCheck, if you’re using NCrunch you might notice the tests don’t get picked up. However,I have found that if you include the following code in your module it works:[&lt;Fact&gt;]let ``ignore this test`` () =    ()This (for some reason) causes NCrunch to see all the other tests too.">
+
+
+
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="Simon Dickson">
+<meta property="og:title" content="FsCheck">
+
+
+  <link rel="canonical" href="http://localhost:4000/blog/2013/11/16/fscheck">
+  <meta property="og:url" content="http://localhost:4000/blog/2013/11/16/fscheck">
+
+
+
+  <meta property="og:description" content="Property based testingSo you might be first wondering what property based testing means. Simply put you describe properties of your functions, and then you bombard your code with data trying to prove or disprove these properties.Here’s an example, let’s say we have a function like this:let removeNegatives list =        let rec removeNegatives&#39; list newList =            match list with            | [] -&gt; newList            | head :: tail when head &lt; 0 -&gt; removeNegatives&#39; tail newList             | head :: tail -&gt; removeNegatives&#39; tail (head :: newList)        removeNegatives&#39; list []And we want to say this function has the following three properties:  If you pass in a list, it returns the list without any negative numbers in it.  If you pass in a list without any negative numbers in it, you get exactly the same list back (this is implied from the first property, but let’s make it explict anyway).  The function will not re-order the elements.So, how do we go about testing these properties?FsCheck to the rescueFsCheck is an F# port of the Haskell framework QuickCheck. What it’ll let us do is fire a whole bunch of data at our function with the aim of helping us ensure that these properties hold.Now before we get onto FsCheck itself, let’s look at how we might test this traditionally. Normally using something like xUnit, you’d have to write specific examples such as this:[&lt;Fact&gt;]let ``for a non-negative list, returns the same list`` () =    let list = [1;2;3]    let result = list = removeNegatives list    Assert.True resultThis does work, but it means you have to manually come up with a few examples of this, a few examples of the other ones. In this particular case the function is simple enough that this would find any bugs but in more complex functions there might be certain numbers that would break it.So using FsCheck we would instead might define this test like this:[&lt;Property&gt;]let ``for a non-negative list, returns the same list`` (list:NonNegativeInt list) =    let list = List.map (fun (i:NonNegativeInt) -&gt; i.Get) list    list = removeNegatives listThe Property attribute works just like the Fact in xUnit or the Test in Nunit. There is one major difference however: the function no longer takes unit, it can take any parameter that FsCheck knows how to create (and yes, you can define them yourself). NonNegativeInt is a built in alias for int which is as the name suggests is a int which is not negative.You may also have noticed that there are no asserts in this test either. That is because as long as your function returns something FsCheck understands (i.e. bool, exceptions, etc), FsCheck will work out whether the test failed or not that way. So in this case, so long as the final line resolves to true, then the test will be considered to have passed.There is actually one final thing to note here aswell, this test isn’t excuted once. By default FsCheck will try to find 100 parameters that work and run the test that many times. You can change this number by setting the MaxSize like this:[&lt;Property(MaxSize=1000)&gt;]let ``my test`` () =    ...Anyway, back the tests. If you try and run this test, you’ll see that it fails. Oh noes! What could possibly be wrong?!?! Oh yes, have you noticed that the list is actually reversed during the process, which breaks one of our properties. So lets fix that.let removeNegatives list =        let rec removeNegatives&#39; list newList =            match list with            | [] -&gt; List.rev newList            | head :: tail when head &lt; 0 -&gt; removeNegatives&#39; tail newList             | head :: tail -&gt; removeNegatives&#39; tail (head :: newList)        removeNegatives&#39; list []Ok, so now we have a test covering that second property: if you pass in a non-negative list, you get the same list back again.So now how about the first property, testing for the removal of elements less than zero. Well first we could write a test that checks that if you pass in a list of negative numbers, it should always return an empty list:[&lt;Property&gt;]let ``for a negative list, returns an empty list`` (list:PositiveInt list) =    let list = List.map (fun (i:PositiveInt) -&gt; -1 * i.Get) list    [] = removeNegatives listOk great and that passes, maybe we should write a test that tests if it actually filters things out. Well that looks something like this:[&lt;Property&gt;]    let ``for a mixed list, returns a positive list`` (list:int list) =        let outputList = List.filter (fun i -&gt; i &gt;= 0) list        outputList = removeNegatives listIn this case, this test rather points out the uselessness of this function. Maybe that makes it quite a bad example, but I put it here for completeness anyway (after all it does implement the same function in a single line).Side noteI probably should point out that I have had some problem with using FsCheck, if you’re using NCrunch you might notice the tests don’t get picked up. However,I have found that if you include the following code in your module it works:[&lt;Fact&gt;]let ``ignore this test`` () =    ()This (for some reason) causes NCrunch to see all the other tests too.">
+
+
+
+
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2013-11-16T15:33:00+00:00">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="http://localhost:4000/feed.xml" type="application/atom+xml" rel="alternate" title="Simon Dickson Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://localhost:4000/assets/css/main.css">
+
+<meta http-equiv="cleartype" content="on">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <button><div class="navicon"></div></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg"><a href="http://localhost:4000/">Simon Dickson</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/blog/">Blog</a></li>
+          
+        </ul>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+      	<img src="http://localhost:4000/assets/media/bio-photo.jpg" class="author__avatar" alt="Simon Dickson">
+      
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name">Simon Dickson</h3>
+    <p class="author__bio">Views are not my own and may not reflect the of anyone</p>
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> London, UK</li>
+      
+      
+      
+      
+      
+        <li><a href="https://twitter.com/simonhdickson"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+      
+      
+      
+      
+      
+      
+      
+      
+        <li><a href="https://bitbucket.org/simonhdickson"><i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
+      
+      
+        <li><a href="https://github.com/simonhdickson"><i class="fa fa-fw fa-github" aria-hidden="true"></i> Github</a></li>
+      
+      
+        <li><a href="https://www.stackoverflow.com/users/503341/simon-dickson"><i class="fa fa-fw fa-stack-overflow" aria-hidden="true"></i> Stackoverflow</a></li>
+      
+      
+      
+      
+      
+      
+        <li><a href="https://steamcommunity.com/id/simonhdickson"><i class="fa fa-fw fa-steam-square" aria-hidden="true"></i> Steam</a></li>
+      
+      
+        <li><a href="https://www.youtube.com/user/simonhdickson"><i class="fa fa-fw fa-youtube-square" aria-hidden="true"></i> YouTube</a></li>
+      
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="FsCheck">
+    <meta itemprop="description" content="Property based testingSo you might be first wondering what property based testing means. Simply put you describe properties of your functions, and then you bombard your code with data trying to prove or disprove these properties.Here’s an example, let’s say we have a function like this:let removeNegatives list =        let rec removeNegatives&#39; list newList =            match list with            | [] -&gt; newList            | head :: tail when head &lt; 0 -&gt; removeNegatives&#39; tail newList             | head :: tail -&gt; removeNegatives&#39; tail (head :: newList)        removeNegatives&#39; list []And we want to say this function has the following three properties:  If you pass in a list, it returns the list without any negative numbers in it.  If you pass in a list without any negative numbers in it, you get exactly the same list back (this is implied from the first property, but let’s make it explict anyway).  The function will not re-order the elements.So, how do we go about testing these properties?FsCheck to the rescueFsCheck is an F# port of the Haskell framework QuickCheck. What it’ll let us do is fire a whole bunch of data at our function with the aim of helping us ensure that these properties hold.Now before we get onto FsCheck itself, let’s look at how we might test this traditionally. Normally using something like xUnit, you’d have to write specific examples such as this:[&lt;Fact&gt;]let ``for a non-negative list, returns the same list`` () =    let list = [1;2;3]    let result = list = removeNegatives list    Assert.True resultThis does work, but it means you have to manually come up with a few examples of this, a few examples of the other ones. In this particular case the function is simple enough that this would find any bugs but in more complex functions there might be certain numbers that would break it.So using FsCheck we would instead might define this test like this:[&lt;Property&gt;]let ``for a non-negative list, returns the same list`` (list:NonNegativeInt list) =    let list = List.map (fun (i:NonNegativeInt) -&gt; i.Get) list    list = removeNegatives listThe Property attribute works just like the Fact in xUnit or the Test in Nunit. There is one major difference however: the function no longer takes unit, it can take any parameter that FsCheck knows how to create (and yes, you can define them yourself). NonNegativeInt is a built in alias for int which is as the name suggests is a int which is not negative.You may also have noticed that there are no asserts in this test either. That is because as long as your function returns something FsCheck understands (i.e. bool, exceptions, etc), FsCheck will work out whether the test failed or not that way. So in this case, so long as the final line resolves to true, then the test will be considered to have passed.There is actually one final thing to note here aswell, this test isn’t excuted once. By default FsCheck will try to find 100 parameters that work and run the test that many times. You can change this number by setting the MaxSize like this:[&lt;Property(MaxSize=1000)&gt;]let ``my test`` () =    ...Anyway, back the tests. If you try and run this test, you’ll see that it fails. Oh noes! What could possibly be wrong?!?! Oh yes, have you noticed that the list is actually reversed during the process, which breaks one of our properties. So lets fix that.let removeNegatives list =        let rec removeNegatives&#39; list newList =            match list with            | [] -&gt; List.rev newList            | head :: tail when head &lt; 0 -&gt; removeNegatives&#39; tail newList             | head :: tail -&gt; removeNegatives&#39; tail (head :: newList)        removeNegatives&#39; list []Ok, so now we have a test covering that second property: if you pass in a non-negative list, you get the same list back again.So now how about the first property, testing for the removal of elements less than zero. Well first we could write a test that checks that if you pass in a list of negative numbers, it should always return an empty list:[&lt;Property&gt;]let ``for a negative list, returns an empty list`` (list:PositiveInt list) =    let list = List.map (fun (i:PositiveInt) -&gt; -1 * i.Get) list    [] = removeNegatives listOk great and that passes, maybe we should write a test that tests if it actually filters things out. Well that looks something like this:[&lt;Property&gt;]    let ``for a mixed list, returns a positive list`` (list:int list) =        let outputList = List.filter (fun i -&gt; i &gt;= 0) list        outputList = removeNegatives listIn this case, this test rather points out the uselessness of this function. Maybe that makes it quite a bad example, but I put it here for completeness anyway (after all it does implement the same function in a single line).Side noteI probably should point out that I have had some problem with using FsCheck, if you’re using NCrunch you might notice the tests don’t get picked up. However,I have found that if you include the following code in your module it works:[&lt;Fact&gt;]let ``ignore this test`` () =    ()This (for some reason) causes NCrunch to see all the other tests too.">
+    <meta itemprop="datePublished" content="November 16, 2013">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">FsCheck
+</h1>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        <h2 id="property-based-testing">Property based testing</h2>
+<p>So you might be first wondering what property based testing means. Simply put you describe properties of your functions, and then you bombard your code with data trying to prove or disprove these properties.</p>
+
+<p>Here’s an example, let’s say we have a function like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let removeNegatives list =
+        let rec removeNegatives' list newList =
+            match list with
+            | [] -&gt; newList
+            | head :: tail when head &lt; 0 -&gt; removeNegatives' tail newList 
+            | head :: tail -&gt; removeNegatives' tail (head :: newList)
+        removeNegatives' list []
+</code></pre>
+</div>
+
+<p>And we want to say this function has the following three properties:</p>
+
+<ol>
+  <li>If you pass in a list, it returns the list without any negative numbers in it.</li>
+  <li>If you pass in a list without any negative numbers in it, you get exactly the same list back (this is implied from the first property, but let’s make it explict anyway).</li>
+  <li>The function will not re-order the elements.</li>
+</ol>
+
+<p>So, how do we go about testing these properties?</p>
+
+<h2 id="fscheck-to-the-rescue">FsCheck to the rescue</h2>
+<p>FsCheck is an F# port of the Haskell framework QuickCheck. What it’ll let us do is fire a whole bunch of data at our function with the aim of helping us ensure that these properties hold.</p>
+
+<p>Now before we get onto FsCheck itself, let’s look at how we might test this traditionally. Normally using something like xUnit, you’d have to write specific examples such as this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[&lt;Fact&gt;]
+let ``for a non-negative list, returns the same list`` () =
+    let list = [1;2;3]
+    let result = list = removeNegatives list
+    Assert.True result
+</code></pre>
+</div>
+
+<p>This does work, but it means you have to manually come up with a few examples of this, a few examples of the other ones. In this particular case the function is simple enough that this would find any bugs but in more complex functions there might be certain numbers that would break it.</p>
+
+<p>So using FsCheck we would instead might define this test like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[&lt;Property&gt;]
+let ``for a non-negative list, returns the same list`` (list:NonNegativeInt list) =
+    let list = List.map (fun (i:NonNegativeInt) -&gt; i.Get) list
+    list = removeNegatives list
+</code></pre>
+</div>
+
+<p>The Property attribute works just like the Fact in xUnit or the Test in Nunit. There is one major difference however: the function no longer takes unit, it can take any parameter that FsCheck knows how to create (and yes, you can define them yourself). NonNegativeInt is a built in alias for int which is as the name suggests is a int which is not negative.</p>
+
+<p>You may also have noticed that there are no asserts in this test either. That is because as long as your function returns something FsCheck understands (i.e. bool, exceptions, etc), FsCheck will work out whether the test failed or not that way. So in this case, so long as the final line resolves to true, then the test will be considered to have passed.</p>
+
+<p>There is actually one final thing to note here aswell, this test isn’t excuted once. By default FsCheck will try to find 100 parameters that work and run the test that many times. You can change this number by setting the MaxSize like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[&lt;Property(MaxSize=1000)&gt;]
+let ``my test`` () =
+    ...
+</code></pre>
+</div>
+
+<p>Anyway, back the tests. If you try and run this test, you’ll see that it fails. Oh noes! What could possibly be wrong?!?! Oh yes, have you noticed that the list is actually reversed during the process, which breaks one of our properties. So lets fix that.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let removeNegatives list =
+        let rec removeNegatives' list newList =
+            match list with
+            | [] -&gt; List.rev newList
+            | head :: tail when head &lt; 0 -&gt; removeNegatives' tail newList 
+            | head :: tail -&gt; removeNegatives' tail (head :: newList)
+        removeNegatives' list []
+</code></pre>
+</div>
+
+<p>Ok, so now we have a test covering that second property: if you pass in a non-negative list, you get the same list back again.</p>
+
+<p>So now how about the first property, testing for the removal of elements less than zero. Well first we could write a test that checks that if you pass in a list of negative numbers, it should always return an empty list:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[&lt;Property&gt;]
+let ``for a negative list, returns an empty list`` (list:PositiveInt list) =
+    let list = List.map (fun (i:PositiveInt) -&gt; -1 * i.Get) list
+    [] = removeNegatives list
+</code></pre>
+</div>
+
+<p>Ok great and that passes, maybe we should write a test that tests if it actually filters things out. Well that looks something like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[&lt;Property&gt;]
+    let ``for a mixed list, returns a positive list`` (list:int list) =
+        let outputList = List.filter (fun i -&gt; i &gt;= 0) list
+        outputList = removeNegatives list
+</code></pre>
+</div>
+
+<p>In this case, this test rather points out the uselessness of this function. Maybe that makes it quite a bad example, but I put it here for completeness anyway (after all it does implement the same function in a single line).</p>
+
+<h2 id="side-note">Side note</h2>
+<p>I probably should point out that I have had some problem with using FsCheck, 
+if you’re using NCrunch you might notice the tests don’t get picked up. However,
+I have found that if you include the following code in your module it works:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[&lt;Fact&gt;]
+let ``ignore this test`` () =
+    ()
+</code></pre>
+</div>
+
+<p>This (for some reason) causes NCrunch to see all the other tests too.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2013-11-16T15:33:00+00:00">November 16, 2013</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="#" class="pagination--pager disabled">Previous</a>
+    
+    
+      <a href="http://localhost:4000/blog/2013/11/22/the-simon-says-monad" class="pagination--pager" title="The Simon Says Monad
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+      <div class="page__comments">
+  
+  
+    <h4 class="page__comments-title">Comments</h4>
+    <section id="disqus_thread"></section>
+  
+</div>
+    
+  </article>
+
+  
+  
+</div>
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+    
+    
+    
+      <li><a href="http://github.com/simonhdickson"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+      <li><a href="http://bitbucket.org/simonhdickson"><i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
+    
+    <li><a href="http://localhost:4000/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2016 Simon Dickson. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+      </footer>
+    </div>
+
+    <script src="http://localhost:4000/assets/js/main.min.js"></script>
+
+
+
+
+
+  
+  <script type="text/javascript">
+  	/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+  	var disqus_shortname = 'simonhdickson';
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function() {
+  		var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  		dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  	})();
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function () {
+  		var s = document.createElement('script'); s.async = true;
+  		s.type = 'text/javascript';
+  		s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  		(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  	}());
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+
+
+  </body>
+</html>
