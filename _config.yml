@@ -76,6 +76,12 @@ exclude:
   - Gemfile
   - Gemfile.lock
 
+# Analytics
+analytics:
+  provider               : "google"
+  google:
+    tracking_id          : "UA-46304436-1"
+
 # Site Author
 author:
   name             : "Simon Dickson"
