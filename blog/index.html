@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.2.2 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
 <html lang="en" class="no-js">
   <head>
     <meta charset="utf-8">
@@ -23,7 +29,9 @@
 
 
 
-<meta property="og:locale" content="en">
+<meta name="author" content="Simon Dickson">
+
+<meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="Simon Dickson">
 <meta property="og:title" content="Simon’s Blog">
 
@@ -72,6 +80,21 @@
 <!-- For all browsers -->
 <link rel="stylesheet" href="https://www.simonhdickson.com/assets/css/main.css">
 
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
 <meta http-equiv="cleartype" content="on">
     <!-- start custom head snippets -->
 
@@ -89,14 +112,14 @@
   <div class="masthead__inner-wrap">
     <div class="masthead__menu">
       <nav id="site-nav" class="greedy-nav">
-        <button><div class="navicon"></div></button>
+        <a class="site-title" href="https://www.simonhdickson.com/">Simon Dickson</a>
         <ul class="visible-links">
-          <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://www.simonhdickson.com/">Simon Dickson</a></li>
           
             
             <li class="masthead__menu-item"><a href="https://www.simonhdickson.com/blog/">Blog</a></li>
           
         </ul>
+        <button><div class="navicon"></div></button>
         <ul class="hidden-links hidden"></ul>
       </nav>
     </div>
@@ -117,58 +140,122 @@
   
     <div class="author__avatar">
       
-      	<img src="https://www.simonhdickson.com/assets/media/bio-photo.jpg" class="author__avatar" alt="Simon Dickson">
+        <img src="https://www.simonhdickson.com/assets/media/bio-photo.jpg" class="author__avatar" alt="Simon Dickson" itemprop="image">
       
     </div>
   
 
   <div class="author__content">
-    <h3 class="author__name">Simon Dickson</h3>
-    <p class="author__bio">Views are not my own and may not reflect the of anyone</p>
+    <h3 class="author__name" itemprop="name">Simon Dickson</h3>
+    
+      <p class="author__bio" itemprop="description">
+        Views are not my own and may not reflect the of anyone
+      </p>
+    
   </div>
 
   <div class="author__urls-wrapper">
     <button class="btn btn--inverse">Follow</button>
     <ul class="author__urls social-icons">
       
-        <li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> London, UK</li>
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">London, UK</span>
+        </li>
       
+
       
+
       
+
       
+
       
-        <li><a href="https://twitter.com/simonhdickson"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        <li>
+          <a href="https://twitter.com/simonhdickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter
+          </a>
+        </li>
       
+
       
+
       
+
       
+
       
+
       
+
       
+
       
-        <li><a href="https://bitbucket.org/simonhdickson"><i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
+        <li>
+          <a href="https://bitbucket.org/simonhdickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket
+          </a>
+        </li>
       
+
       
-        <li><a href="https://github.com/simonhdickson"><i class="fa fa-fw fa-github" aria-hidden="true"></i> Github</a></li>
+        <li>
+          <a href="https://github.com/simonhdickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
       
+
       
-        <li><a href="https://www.stackoverflow.com/users/503341/simon-dickson"><i class="fa fa-fw fa-stack-overflow" aria-hidden="true"></i> Stackoverflow</a></li>
+        <li>
+          <a href="https://www.stackoverflow.com/users/503341/simon-dickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-stack-overflow" aria-hidden="true"></i> Stackoverflow
+          </a>
+        </li>
       
+
       
+
       
+
       
+
       
+
       
-        <li><a href="https://steamcommunity.com/id/simonhdickson"><i class="fa fa-fw fa-steam-square" aria-hidden="true"></i> Steam</a></li>
+        <li>
+          <a href="https://steamcommunity.com/id/simonhdickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-steam-square" aria-hidden="true"></i> Steam
+          </a>
+        </li>
       
+
       
-        <li><a href="https://www.youtube.com/user/simonhdickson"><i class="fa fa-fw fa-youtube-square" aria-hidden="true"></i> YouTube</a></li>
+        
+          <li>
+            <a href="https://www.youtube.com/user/simonhdickson" itemprop="sameAs">
+              <i class="fa fa-fw fa-youtube-square" aria-hidden="true"></i> YouTube
+            </a>
+          </li>
+        
       
+
       
+
       
+
       
+
       
+
       
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
     </ul>
   </div>
 </div>
@@ -182,6 +269,24 @@
       <h1 class="page__title">Simon's Blog</h1>
     
     
+  
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="https://www.simonhdickson.com/blog/2017/03/22/dotnet-core-on-concourse/" rel="permalink">.NET Core on Concourse
+</a>
+      
+    </h2>
+    
+    <p class="archive__item-excerpt" itemprop="description">If you’re not aware of Concourse, the main idea behind it is that your build server should be completely separate from your actual builds. If you delete your...</p>
+  </article>
+</div>
+
   
 
 
@@ -259,24 +364,6 @@ Then I wanted to try out the .net client library, so w...</p>
   </article>
 </div>
 
-  
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="https://www.simonhdickson.com/blog/2014/02/27/fsharp-31-as-csharp-60-strict-mode/" rel="permalink">F# 3.1 as C# 6.0 Strict Mode
-</a>
-      
-    </h2>
-    
-    <p class="archive__item-excerpt" itemprop="description">I was reading the (probable) new features of C# 6.0, and I can’t help but feel like C# wants to just be F# at this point but just doesn’t want to alienate it...</p>
-  </article>
-</div>
-
 
 <nav class="pagination">
   
@@ -311,7 +398,7 @@ Then I wanted to try out the .net client library, so w...</p>
   </ul>
 </div>
 
-<div class="page__footer-copyright">&copy; 2016 Simon Dickson. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+<div class="page__footer-copyright">&copy; 2017 Simon Dickson. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
       </footer>
     </div>
 

@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.2.2 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
 <html lang="en" class="no-js">
   <head>
     <meta charset="utf-8">
@@ -18,12 +24,14 @@
 
 
 
-<meta name="description" content="Cheese">
+<meta name="description" content="">
 
 
 
 
-<meta property="og:locale" content="en">
+<meta name="author" content="Simon Dickson">
+
+<meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="Simon Dickson">
 <meta property="og:title" content="Europa Universalis IV Rights of Man: Iroquois">
 
@@ -33,7 +41,7 @@
 
 
 
-  <meta property="og:description" content="Cheese">
+  <meta property="og:description" content="">
 
 
 
@@ -44,7 +52,7 @@
 
 
   <meta property="og:type" content="article">
-  <meta property="article:published_time" content="2016-11-03T12:11:42+00:00">
+  <meta property="article:published_time" content="2017-04-01T08:51:41+01:00">
 
 
 
@@ -75,6 +83,21 @@
 <!-- For all browsers -->
 <link rel="stylesheet" href="https://www.simonhdickson.com/assets/css/main.css">
 
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
 <meta http-equiv="cleartype" content="on">
     <!-- start custom head snippets -->
 
@@ -92,14 +115,14 @@
   <div class="masthead__inner-wrap">
     <div class="masthead__menu">
       <nav id="site-nav" class="greedy-nav">
-        <button><div class="navicon"></div></button>
+        <a class="site-title" href="https://www.simonhdickson.com/">Simon Dickson</a>
         <ul class="visible-links">
-          <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://www.simonhdickson.com/">Simon Dickson</a></li>
           
             
             <li class="masthead__menu-item"><a href="https://www.simonhdickson.com/blog/">Blog</a></li>
           
         </ul>
+        <button><div class="navicon"></div></button>
         <ul class="hidden-links hidden"></ul>
       </nav>
     </div>
@@ -120,58 +143,122 @@
   
     <div class="author__avatar">
       
-      	<img src="https://www.simonhdickson.com/assets/media/bio-photo.jpg" class="author__avatar" alt="Simon Dickson">
+        <img src="https://www.simonhdickson.com/assets/media/bio-photo.jpg" class="author__avatar" alt="Simon Dickson" itemprop="image">
       
     </div>
   
 
   <div class="author__content">
-    <h3 class="author__name">Simon Dickson</h3>
-    <p class="author__bio">Views are not my own and may not reflect the of anyone</p>
+    <h3 class="author__name" itemprop="name">Simon Dickson</h3>
+    
+      <p class="author__bio" itemprop="description">
+        Views are not my own and may not reflect the of anyone
+      </p>
+    
   </div>
 
   <div class="author__urls-wrapper">
     <button class="btn btn--inverse">Follow</button>
     <ul class="author__urls social-icons">
       
-        <li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> London, UK</li>
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">London, UK</span>
+        </li>
       
+
       
+
       
+
       
+
       
-        <li><a href="https://twitter.com/simonhdickson"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        <li>
+          <a href="https://twitter.com/simonhdickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter
+          </a>
+        </li>
       
+
       
+
       
+
       
+
       
+
       
+
       
+
       
-        <li><a href="https://bitbucket.org/simonhdickson"><i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
+        <li>
+          <a href="https://bitbucket.org/simonhdickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket
+          </a>
+        </li>
       
+
       
-        <li><a href="https://github.com/simonhdickson"><i class="fa fa-fw fa-github" aria-hidden="true"></i> Github</a></li>
+        <li>
+          <a href="https://github.com/simonhdickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
       
+
       
-        <li><a href="https://www.stackoverflow.com/users/503341/simon-dickson"><i class="fa fa-fw fa-stack-overflow" aria-hidden="true"></i> Stackoverflow</a></li>
+        <li>
+          <a href="https://www.stackoverflow.com/users/503341/simon-dickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-stack-overflow" aria-hidden="true"></i> Stackoverflow
+          </a>
+        </li>
       
+
       
+
       
+
       
+
       
+
       
-        <li><a href="https://steamcommunity.com/id/simonhdickson"><i class="fa fa-fw fa-steam-square" aria-hidden="true"></i> Steam</a></li>
+        <li>
+          <a href="https://steamcommunity.com/id/simonhdickson" itemprop="sameAs">
+            <i class="fa fa-fw fa-steam-square" aria-hidden="true"></i> Steam
+          </a>
+        </li>
       
+
       
-        <li><a href="https://www.youtube.com/user/simonhdickson"><i class="fa fa-fw fa-youtube-square" aria-hidden="true"></i> YouTube</a></li>
+        
+          <li>
+            <a href="https://www.youtube.com/user/simonhdickson" itemprop="sameAs">
+              <i class="fa fa-fw fa-youtube-square" aria-hidden="true"></i> YouTube
+            </a>
+          </li>
+        
       
+
       
+
       
+
       
+
       
+
       
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
     </ul>
   </div>
 </div>
@@ -184,7 +271,7 @@
     
       <h1 class="page__title">Europa Universalis IV Rights of Man: Iroquois</h1>
     
-    <p>Cheese</p>
+    
 
   </div>
 </div>
@@ -209,7 +296,7 @@
   </ul>
 </div>
 
-<div class="page__footer-copyright">&copy; 2016 Simon Dickson. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+<div class="page__footer-copyright">&copy; 2017 Simon Dickson. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
       </footer>
     </div>
 
