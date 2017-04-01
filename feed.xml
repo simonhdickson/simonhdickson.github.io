@@ -1,146 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.3">Jekyll</generator><link href="https://www.simonhdickson.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.simonhdickson.com/" rel="alternate" type="text/html" /><updated>2017-04-01T08:51:41+01:00</updated><id>https://www.simonhdickson.com/</id><title type="html">Simon Dickson</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
-</subtitle><author><name>Simon Dickson</name></author><entry><title type="html">.NET Core on Concourse</title><link href="https://www.simonhdickson.com/blog/2017/03/22/dotnet-core-on-concourse/" rel="alternate" type="text/html" title=".NET Core on Concourse" /><published>2017-03-22T21:18:39+00:00</published><updated>2017-03-22T21:18:39+00:00</updated><id>https://www.simonhdickson.com/blog/2017/03/22/dotnet-core-on-concourse</id><content type="html" xml:base="https://www.simonhdickson.com/blog/2017/03/22/dotnet-core-on-concourse/">&lt;p&gt;If you’re not aware of Concourse, the main idea behind it is that your build server should be completely separate from your actual builds. If you delete your Concourse server it should be easy to just re-create your builds again. In Concourse building is all done using containers, so you don’t have to worry about configuring workers.&lt;/p&gt;
-
-&lt;h2 id=&quot;setup&quot;&gt;Setup&lt;/h2&gt;
-
-&lt;p&gt;First thing you’ll need is to &lt;a href=&quot;https://concourse.ci/installing.html&quot;&gt;install concourse&lt;/a&gt;. I won’t cover installing it here since Concourse already have documentation on installing it. If you’re unsure which method to use I’d recommend docker since it is by far the simplest to setup on any platform (it’s also what I’m using here). Whichever method you use you’ll also want to install the command line tool &lt;a href=&quot;https://concourse.ci/downloads.html&quot;&gt;fly&lt;/a&gt; to your path. This will enable you send commands to your concourse install.&lt;/p&gt;
-
-&lt;p&gt;If you have another .NET Core project lying around feel free to use that or download the repo &lt;a href=&quot;https://github.com/simonhdickson/HelloWorldDotNetCore&quot;&gt;from here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;If you want to build it yourself from scratch you’ll need to &lt;a href=&quot;https://www.microsoft.com/net/core#windowscmd&quot;&gt;install .NET Core&lt;/a&gt; locally. Then run the following command in a new folder:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;dotnet new console -l f#
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h2 id=&quot;executing-a-build-on-concourse&quot;&gt;Executing a build on Concourse&lt;/h2&gt;
-
-&lt;p&gt;First thing we’ll need is a build script to run, put it in &lt;code class=&quot;highlighter-rouge&quot;&gt;ci/build.sh&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;HelloWorldDotNetCore
-
-dotnet restore
-dotnet build
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Drop a file in the directory called &lt;code class=&quot;highlighter-rouge&quot;&gt;build.yml&lt;/code&gt; with the following content:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;platform: linux
-
-image_resource:
-  type: docker-image
-  source:
-    repository: microsoft/dotnet
-
-inputs:
-- name: HelloWorldDotNetCore
-
-run:
-  path: sh
-  args: [&quot;HelloWorldDotNetCore/ci/build.sh&quot;]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;To give a quick run down of what this all means:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;image_resource:
-  type: docker-image
-  source:
-    repository: microsoft/dotnet
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Our build is going to run on the docker container microsoft/dotnet, this will be pulled from DockerHub if the worker doesn’t already have it installed.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;inputs:
-- name: HelloWorldDotNetCore
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Out task depends on an input called &lt;code class=&quot;highlighter-rouge&quot;&gt;HelloWorldDotNetCore&lt;/code&gt;. In this case this particular case this is a git resource, but it could be almost anything (we could even take the docker image to use as a parameter if we chose too).&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;run:
-  path: sh
-  args: [&quot;HelloWorldDotNetCore/ci/build.sh&quot;]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;We tell it to run the &lt;code class=&quot;highlighter-rouge&quot;&gt;build.sh&lt;/code&gt; file we created earlier. One important thing to notice is that our current directory is not inside our resource. This is because we could have multiple inputs and also Concourse has no way of knowing that &lt;code class=&quot;highlighter-rouge&quot;&gt;HelloWorldDotNetCore&lt;/code&gt; is suppose to be a folder, it could instead have just been a file.&lt;/p&gt;
-
-&lt;p&gt;This is all we need to execute a build on Concourse. We can run a test build using:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fly -t ci execute -c build.yml
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Whoops, first we need to login:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fly -t ci login -c http://127.0.0.1:8080
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;By default the login is &lt;code class=&quot;highlighter-rouge&quot;&gt;concourse&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;changeme&lt;/code&gt;, unless of course you changed it. Now re-run the execute command.&lt;/p&gt;
-
-&lt;p&gt;It should pull down the docker image and run the build and show it all as if you were running it on your own machine. What is really happening is that &lt;code class=&quot;highlighter-rouge&quot;&gt;fly&lt;/code&gt; is uploading your local directory to the concourse and executing the build inside a container. This is really quite useful since we can perform test builds on our CI server without needing to check the changes in first (no more &lt;code class=&quot;highlighter-rouge&quot;&gt;Fix build&lt;/code&gt; commits… at least in theory).&lt;/p&gt;
-
-&lt;p&gt;However this isn’t really going to work as a CI solution, we need to configure the build to run automatically. We can do this by configuring a pipeline.&lt;/p&gt;
-
-&lt;h2 id=&quot;installing-a-pipeline&quot;&gt;Installing a pipeline&lt;/h2&gt;
-
-&lt;p&gt;You can create quite complex pipelines in Concourse if you want, if you look at their documentation you’ll find examples of what you can do. For now we’ll just set up a simple one that just triggers our build from github (or wherever your project is hosted).&lt;/p&gt;
-
-&lt;p&gt;Add a file called &lt;code class=&quot;highlighter-rouge&quot;&gt;ci/pipeline.yml&lt;/code&gt; with this content:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;resources:
-- name: HelloWorldDotNetCore
-  type: git
-  source:
-    uri: 
-    branch: master
-
-jobs:
-- name: hello-world-app
-  plan:
-  - get: HelloWorldDotNetCore
-    trigger: true
-  - task: tests
-    file: HelloWorldDotNetCore/build.yml
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Now we have to tell Concourse about our pipeline so it knows what we want it to do:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fly -t ci set-pipeline -c ci\pipeline.yml -p HelloWorldApp
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;The pipeline starts disabled but following the console output to enable it. When you navigate to the pipeline in your browser you should see something like this:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/media/concourse/dashboard.png&quot; alt=&quot;Concourse Dashboard&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;You can see the output from each of the steps, trigger/cancel builds. You’ll notice that the UI is fairly limited in terms of what you can do. The idea behind this is to force you to put your pipeline and configuration into code rather than customizing the Concourse CI server itself.&lt;/p&gt;
-
-&lt;h3 id=&quot;additional-notes&quot;&gt;Additional notes&lt;/h3&gt;
-
-&lt;p&gt;While running this build on my Windows machine I encountered a strange error while trying to execute the build:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/media/docker/docker-aufs-error.png&quot; alt=&quot;AUFS error&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;After googling didn’t really find much, I found an option to use the aufs storage driver in the docker documentation. I didn’t think it would actually do anything, but surprisingly it did fix it. If you add this line to the Docker advanced settings in Docker on Windows it should resolve the issue:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/media/docker/docker-advanced-aufs.png&quot; alt=&quot;Docker Advanced Settings&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;registry-mirrors&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;insecure-registries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;storage-driver&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;aufs&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Now I don’t really understand why this fixes the issue, as far as my understanding goes this setting really should make no difference. If someone does know why I’d love to hear it.&lt;/p&gt;</content><author><name>Simon Dickson</name></author><summary type="html">If you’re not aware of Concourse, the main idea behind it is that your build server should be completely separate from your actual builds. If you delete your Concourse server it should be easy to just re-create your builds again. In Concourse building is all done using containers, so you don’t have to worry about configuring workers.</summary></entry><entry><title type="html">Permissions Error with Docker on Windows</title><link href="https://www.simonhdickson.com/blog/2016/10/30/permissions-errors-docker/" rel="alternate" type="text/html" title="Permissions Error with Docker on Windows" /><published>2016-10-30T14:25:39+00:00</published><updated>2016-10-30T14:25:39+00:00</updated><id>https://www.simonhdickson.com/blog/2016/10/30/permissions-errors-docker</id><content type="html" xml:base="https://www.simonhdickson.com/blog/2016/10/30/permissions-errors-docker/">&lt;p&gt;The other day I came across a Jekyll project I wanted to check out on my Windows 10
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.3">Jekyll</generator><link href="https://www.simonhdickson.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.simonhdickson.com/" rel="alternate" type="text/html" /><updated>2017-04-01T09:12:52+01:00</updated><id>https://www.simonhdickson.com/</id><title type="html">Simon Dickson</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</subtitle><author><name>Simon Dickson</name></author><entry><title type="html">Permissions Error with Docker on Windows</title><link href="https://www.simonhdickson.com/blog/2016/10/30/permissions-errors-docker/" rel="alternate" type="text/html" title="Permissions Error with Docker on Windows" /><published>2016-10-30T14:25:39+00:00</published><updated>2016-10-30T14:25:39+00:00</updated><id>https://www.simonhdickson.com/blog/2016/10/30/permissions-errors-docker</id><content type="html" xml:base="https://www.simonhdickson.com/blog/2016/10/30/permissions-errors-docker/">&lt;p&gt;The other day I came across a Jekyll project I wanted to check out on my Windows 10
 machine. I added a little Dockerfile and tried to build a container, and then I got
 this error when running it:&lt;/p&gt;
 
@@ -568,4 +427,110 @@ let tabFun x =
 &lt;p&gt;If you build up a large chain of these things, then writing all this would get cumbersome.&lt;/p&gt;
 
 &lt;h3 id=&quot;maybe-monad&quot;&gt;Maybe monad&lt;/h3&gt;
-&lt;p&gt;If you know your monads, you may have already noticed that the “Simon Says” monad bears a slightly resemblance to the “Maybe” monad. Ok, it IS actually maybe monad. Infact you can find more information about the maybe monad &lt;a href=&quot;http://en.wikibooks.org/wiki/F_Sharp_Programming/Computation_Expressions&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;</content><author><name>Simon Dickson</name></author><summary type="html">What is a Monad? Everyone tries to explain monads in a simple way and makes it sound way more complicated than it really is. Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function. That not strictly mathmatically true, but anything that fits that description could at least be described as monadic. You might be reading that and thinking “surely everything is monadic?”, well yes, almost everything is kind of monadic (or can be described in that way). The Simon Says Monad May I present the single most useful monad in the world! let doIt this that = simonSays{ let! i = this let! j = that printfn &quot;%i&quot; &amp;lt;| i + j } So, the way I see it, when you declare simonSays { … }; you’re basically saying “we don’t play by normal rules: now we play by simonSays rules.” What this means is, if you don’t say “Simon Says”, then you don’t do anything. So for example, if we invoke it like this: doIt (SimonSays 1) (SimonSays 1) Then the result is SimonSays 2. However if we do: doIt (SimonSays 1) SimonDidntSay The the result is SimonDidntSay. To go back to the definition of monads earlier, “Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function”. In the Simon Says monad, there is a single very simple rule: you must say “Simon Says”, otherwise we don’t do anything. If we re-write this code slightly to remove all the F# sugar, it become far more obvious what is happening here. let doIt this that = match this with | SimonSays i -&amp;gt; match that with | SimonSays j -&amp;gt; printfn &quot;%i&quot; &amp;lt;| i + j | _ -&amp;gt; () | _ -&amp;gt; () If you build up a large chain of these things, then writing all this would get cumbersome. Maybe monad If you know your monads, you may have already noticed that the “Simon Says” monad bears a slightly resemblance to the “Maybe” monad. Ok, it IS actually maybe monad. Infact you can find more information about the maybe monad here.</summary></entry></feed>
+&lt;p&gt;If you know your monads, you may have already noticed that the “Simon Says” monad bears a slightly resemblance to the “Maybe” monad. Ok, it IS actually maybe monad. Infact you can find more information about the maybe monad &lt;a href=&quot;http://en.wikibooks.org/wiki/F_Sharp_Programming/Computation_Expressions&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;</content><author><name>Simon Dickson</name></author><summary type="html">What is a Monad? Everyone tries to explain monads in a simple way and makes it sound way more complicated than it really is. Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function. That not strictly mathmatically true, but anything that fits that description could at least be described as monadic. You might be reading that and thinking “surely everything is monadic?”, well yes, almost everything is kind of monadic (or can be described in that way). The Simon Says Monad May I present the single most useful monad in the world! let doIt this that = simonSays{ let! i = this let! j = that printfn &quot;%i&quot; &amp;lt;| i + j } So, the way I see it, when you declare simonSays { … }; you’re basically saying “we don’t play by normal rules: now we play by simonSays rules.” What this means is, if you don’t say “Simon Says”, then you don’t do anything. So for example, if we invoke it like this: doIt (SimonSays 1) (SimonSays 1) Then the result is SimonSays 2. However if we do: doIt (SimonSays 1) SimonDidntSay The the result is SimonDidntSay. To go back to the definition of monads earlier, “Something is monadic if there are rule or set of rules that can define how a set of functions is combined into another function”. In the Simon Says monad, there is a single very simple rule: you must say “Simon Says”, otherwise we don’t do anything. If we re-write this code slightly to remove all the F# sugar, it become far more obvious what is happening here. let doIt this that = match this with | SimonSays i -&amp;gt; match that with | SimonSays j -&amp;gt; printfn &quot;%i&quot; &amp;lt;| i + j | _ -&amp;gt; () | _ -&amp;gt; () If you build up a large chain of these things, then writing all this would get cumbersome. Maybe monad If you know your monads, you may have already noticed that the “Simon Says” monad bears a slightly resemblance to the “Maybe” monad. Ok, it IS actually maybe monad. Infact you can find more information about the maybe monad here.</summary></entry><entry><title type="html">FsCheck</title><link href="https://www.simonhdickson.com/blog/2013/11/16/fscheck/" rel="alternate" type="text/html" title="FsCheck" /><published>2013-11-16T15:33:00+00:00</published><updated>2013-11-16T15:33:00+00:00</updated><id>https://www.simonhdickson.com/blog/2013/11/16/fscheck</id><content type="html" xml:base="https://www.simonhdickson.com/blog/2013/11/16/fscheck/">&lt;h2 id=&quot;property-based-testing&quot;&gt;Property based testing&lt;/h2&gt;
+&lt;p&gt;So you might be first wondering what property based testing means. Simply put you describe properties of your functions, and then you bombard your code with data trying to prove or disprove these properties.&lt;/p&gt;
+
+&lt;p&gt;Here’s an example, let’s say we have a function like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let removeNegatives list =
+        let rec removeNegatives' list newList =
+            match list with
+            | [] -&amp;gt; newList
+            | head :: tail when head &amp;lt; 0 -&amp;gt; removeNegatives' tail newList 
+            | head :: tail -&amp;gt; removeNegatives' tail (head :: newList)
+        removeNegatives' list []
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;And we want to say this function has the following three properties:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;If you pass in a list, it returns the list without any negative numbers in it.&lt;/li&gt;
+  &lt;li&gt;If you pass in a list without any negative numbers in it, you get exactly the same list back (this is implied from the first property, but let’s make it explict anyway).&lt;/li&gt;
+  &lt;li&gt;The function will not re-order the elements.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;So, how do we go about testing these properties?&lt;/p&gt;
+
+&lt;h2 id=&quot;fscheck-to-the-rescue&quot;&gt;FsCheck to the rescue&lt;/h2&gt;
+&lt;p&gt;FsCheck is an F# port of the Haskell framework QuickCheck. What it’ll let us do is fire a whole bunch of data at our function with the aim of helping us ensure that these properties hold.&lt;/p&gt;
+
+&lt;p&gt;Now before we get onto FsCheck itself, let’s look at how we might test this traditionally. Normally using something like xUnit, you’d have to write specific examples such as this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[&amp;lt;Fact&amp;gt;]
+let ``for a non-negative list, returns the same list`` () =
+    let list = [1;2;3]
+    let result = list = removeNegatives list
+    Assert.True result
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This does work, but it means you have to manually come up with a few examples of this, a few examples of the other ones. In this particular case the function is simple enough that this would find any bugs but in more complex functions there might be certain numbers that would break it.&lt;/p&gt;
+
+&lt;p&gt;So using FsCheck we would instead might define this test like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[&amp;lt;Property&amp;gt;]
+let ``for a non-negative list, returns the same list`` (list:NonNegativeInt list) =
+    let list = List.map (fun (i:NonNegativeInt) -&amp;gt; i.Get) list
+    list = removeNegatives list
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The Property attribute works just like the Fact in xUnit or the Test in Nunit. There is one major difference however: the function no longer takes unit, it can take any parameter that FsCheck knows how to create (and yes, you can define them yourself). NonNegativeInt is a built in alias for int which is as the name suggests is a int which is not negative.&lt;/p&gt;
+
+&lt;p&gt;You may also have noticed that there are no asserts in this test either. That is because as long as your function returns something FsCheck understands (i.e. bool, exceptions, etc), FsCheck will work out whether the test failed or not that way. So in this case, so long as the final line resolves to true, then the test will be considered to have passed.&lt;/p&gt;
+
+&lt;p&gt;There is actually one final thing to note here aswell, this test isn’t excuted once. By default FsCheck will try to find 100 parameters that work and run the test that many times. You can change this number by setting the MaxSize like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[&amp;lt;Property(MaxSize=1000)&amp;gt;]
+let ``my test`` () =
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Anyway, back the tests. If you try and run this test, you’ll see that it fails. Oh noes! What could possibly be wrong?!?! Oh yes, have you noticed that the list is actually reversed during the process, which breaks one of our properties. So lets fix that.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let removeNegatives list =
+        let rec removeNegatives' list newList =
+            match list with
+            | [] -&amp;gt; List.rev newList
+            | head :: tail when head &amp;lt; 0 -&amp;gt; removeNegatives' tail newList 
+            | head :: tail -&amp;gt; removeNegatives' tail (head :: newList)
+        removeNegatives' list []
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Ok, so now we have a test covering that second property: if you pass in a non-negative list, you get the same list back again.&lt;/p&gt;
+
+&lt;p&gt;So now how about the first property, testing for the removal of elements less than zero. Well first we could write a test that checks that if you pass in a list of negative numbers, it should always return an empty list:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[&amp;lt;Property&amp;gt;]
+let ``for a negative list, returns an empty list`` (list:PositiveInt list) =
+    let list = List.map (fun (i:PositiveInt) -&amp;gt; -1 * i.Get) list
+    [] = removeNegatives list
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Ok great and that passes, maybe we should write a test that tests if it actually filters things out. Well that looks something like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[&amp;lt;Property&amp;gt;]
+    let ``for a mixed list, returns a positive list`` (list:int list) =
+        let outputList = List.filter (fun i -&amp;gt; i &amp;gt;= 0) list
+        outputList = removeNegatives list
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In this case, this test rather points out the uselessness of this function. Maybe that makes it quite a bad example, but I put it here for completeness anyway (after all it does implement the same function in a single line).&lt;/p&gt;
+
+&lt;h2 id=&quot;side-note&quot;&gt;Side note&lt;/h2&gt;
+&lt;p&gt;I probably should point out that I have had some problem with using FsCheck, 
+if you’re using NCrunch you might notice the tests don’t get picked up. However,
+I have found that if you include the following code in your module it works:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[&amp;lt;Fact&amp;gt;]
+let ``ignore this test`` () =
+    ()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This (for some reason) causes NCrunch to see all the other tests too.&lt;/p&gt;</content><author><name>Simon Dickson</name></author><summary type="html">Property based testing So you might be first wondering what property based testing means. Simply put you describe properties of your functions, and then you bombard your code with data trying to prove or disprove these properties. Here’s an example, let’s say we have a function like this: let removeNegatives list = let rec removeNegatives' list newList = match list with | [] -&amp;gt; newList | head :: tail when head &amp;lt; 0 -&amp;gt; removeNegatives' tail newList | head :: tail -&amp;gt; removeNegatives' tail (head :: newList) removeNegatives' list [] And we want to say this function has the following three properties: If you pass in a list, it returns the list without any negative numbers in it. If you pass in a list without any negative numbers in it, you get exactly the same list back (this is implied from the first property, but let’s make it explict anyway). The function will not re-order the elements. So, how do we go about testing these properties? FsCheck to the rescue FsCheck is an F# port of the Haskell framework QuickCheck. What it’ll let us do is fire a whole bunch of data at our function with the aim of helping us ensure that these properties hold. Now before we get onto FsCheck itself, let’s look at how we might test this traditionally. Normally using something like xUnit, you’d have to write specific examples such as this: [&amp;lt;Fact&amp;gt;] let ``for a non-negative list, returns the same list`` () = let list = [1;2;3] let result = list = removeNegatives list Assert.True result This does work, but it means you have to manually come up with a few examples of this, a few examples of the other ones. In this particular case the function is simple enough that this would find any bugs but in more complex functions there might be certain numbers that would break it. So using FsCheck we would instead might define this test like this: [&amp;lt;Property&amp;gt;] let ``for a non-negative list, returns the same list`` (list:NonNegativeInt list) = let list = List.map (fun (i:NonNegativeInt) -&amp;gt; i.Get) list list = removeNegatives list The Property attribute works just like the Fact in xUnit or the Test in Nunit. There is one major difference however: the function no longer takes unit, it can take any parameter that FsCheck knows how to create (and yes, you can define them yourself). NonNegativeInt is a built in alias for int which is as the name suggests is a int which is not negative. You may also have noticed that there are no asserts in this test either. That is because as long as your function returns something FsCheck understands (i.e. bool, exceptions, etc), FsCheck will work out whether the test failed or not that way. So in this case, so long as the final line resolves to true, then the test will be considered to have passed. There is actually one final thing to note here aswell, this test isn’t excuted once. By default FsCheck will try to find 100 parameters that work and run the test that many times. You can change this number by setting the MaxSize like this: [&amp;lt;Property(MaxSize=1000)&amp;gt;] let ``my test`` () = ... Anyway, back the tests. If you try and run this test, you’ll see that it fails. Oh noes! What could possibly be wrong?!?! Oh yes, have you noticed that the list is actually reversed during the process, which breaks one of our properties. So lets fix that. let removeNegatives list = let rec removeNegatives' list newList = match list with | [] -&amp;gt; List.rev newList | head :: tail when head &amp;lt; 0 -&amp;gt; removeNegatives' tail newList | head :: tail -&amp;gt; removeNegatives' tail (head :: newList) removeNegatives' list [] Ok, so now we have a test covering that second property: if you pass in a non-negative list, you get the same list back again. So now how about the first property, testing for the removal of elements less than zero. Well first we could write a test that checks that if you pass in a list of negative numbers, it should always return an empty list: [&amp;lt;Property&amp;gt;] let ``for a negative list, returns an empty list`` (list:PositiveInt list) = let list = List.map (fun (i:PositiveInt) -&amp;gt; -1 * i.Get) list [] = removeNegatives list Ok great and that passes, maybe we should write a test that tests if it actually filters things out. Well that looks something like this: [&amp;lt;Property&amp;gt;] let ``for a mixed list, returns a positive list`` (list:int list) = let outputList = List.filter (fun i -&amp;gt; i &amp;gt;= 0) list outputList = removeNegatives list In this case, this test rather points out the uselessness of this function. Maybe that makes it quite a bad example, but I put it here for completeness anyway (after all it does implement the same function in a single line). Side note I probably should point out that I have had some problem with using FsCheck, if you’re using NCrunch you might notice the tests don’t get picked up. However, I have found that if you include the following code in your module it works: [&amp;lt;Fact&amp;gt;] let ``ignore this test`` () = () This (for some reason) causes NCrunch to see all the other tests too.</summary></entry></feed>
