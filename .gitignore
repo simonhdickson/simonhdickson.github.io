@@ -2,6 +2,5 @@ _site
 .deploy
 .sass-cache
 .jekyll-metadata
-_deploy.yml
 .bundle
 
