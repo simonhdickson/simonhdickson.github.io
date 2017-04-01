@@ -1,7 +1,7 @@
 ---
 layout: single
 title:  ".NET Core on Concourse"
-date:   2017-03-22 21:18:39 +0000
+date:   2017-04-01 21:18:39 +0000
 categories: docker concourse "dotnet core"
 author_profile: true
 ---
