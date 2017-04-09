@@ -86,11 +86,11 @@ exclude:
 author:
   name             : "Simon Dickson"
   avatar           : "assets/media/bio-photo.jpg"
-  bio              : "Views are not my own and may not reflect the of anyone"
+  bio              : "Views are not my own and may not reflect the opinion of anyone"
   location         : "London, UK"
   email            :
   uri              :
-  bitbucket        : "simonhdickson"
+#  bitbucket        : "simonhdickson"
   codepen          :
   dribbble         :
 #  flickr           : "83690047@N04"

@@ -16,7 +16,7 @@ If you have another .NET Core project lying around feel free to use that or down
 
 If you want to build it yourself from scratch you'll need to [install .NET Core](https://www.microsoft.com/net/core#windowscmd) locally. Then run the following command in a new folder:
 
-```
+```bash
 dotnet new console -l f#
 ```
 
@@ -24,7 +24,7 @@ dotnet new console -l f#
 
 First thing we'll need is a build script to run, put it in `ci/build.sh`:
 
-```
+```bash
 #!/bin/bash
 cd HelloWorldDotNetCore
 
@@ -34,7 +34,7 @@ dotnet build
 
 Drop a file in the directory called `build.yml` with the following content:
 
-```
+```yml
 platform: linux
 
 image_resource:
@@ -52,7 +52,7 @@ run:
 
 To give a quick run down of what this all means:
 
-```
+```yml
 image_resource:
   type: docker-image
   source:
@@ -61,14 +61,14 @@ image_resource:
 
 Our build is going to run on the docker container microsoft/dotnet, this will be pulled from DockerHub if the worker doesn't already have it installed.
 
-```
+```yml
 inputs:
 - name: HelloWorldDotNetCore
 ```
 
 Out task depends on an input called `HelloWorldDotNetCore`. In this case this particular case this is a git resource, but it could be almost anything (we could even take the docker image to use as a parameter if we chose too).
 
-```
+```yml
 run:
   path: sh
   args: ["HelloWorldDotNetCore/ci/build.sh"]
@@ -100,7 +100,7 @@ You can create quite complex pipelines in Concourse if you want, if you look at 
 
 Add a file called `ci/pipeline.yml` with this content:
 
-```
+```yml
 resources:
 - name: HelloWorldDotNetCore
   type: git
